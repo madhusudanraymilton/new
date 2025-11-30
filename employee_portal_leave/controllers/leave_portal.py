@@ -25,12 +25,37 @@ class PortalLeaveController(http.Controller):
                 })
 
             # Get active leave types
-            leave_types = request.env['hr.leave.type'].sudo().search([
-                ('active', '=', True),
-            ], order='name')
+            #leave_types = request.env['hr.leave.type'].sudo().search([
+            #    ('active', '=', True),
+            #], order='name')
 
+
+            # Get leave types that have valid allocations for current employee
+            # First, get all approved allocations for this employee
+            allocations = request.env['hr.leave.allocation'].sudo().search([
+                ('employee_id', '=', employee.id),
+                ('state', '=', 'validate'),  # Only approved allocations
+                ('holiday_status_id.active', '=', True),  # Only active leave types
+            ])
+
+            # Extract unique leave type IDs from allocations
+            allocated_leave_type_ids = allocations.mapped('holiday_status_id').ids
+
+            # Get only leave types that have allocations
+            leave_types = request.env['hr.leave.type'].sudo().browse(allocated_leave_type_ids).sorted('name')
+
+            # Alternative: If you want to include leave types that don't require allocation
+            # Uncomment the lines below:
+            # no_allocation_types = request.env['hr.leave.type'].sudo().search([
+            #     ('active', '=', True),
+            #     ('requires_allocation', '=', 'no'),
+            # ])
+            # leave_types = (leave_types | no_allocation_types).sorted('name')
             # Get ALL active employees for delegation (excluding current user)
             # Using sudo() to bypass access restrictions for reading
+
+
+
             employees = request.env['hr.employee'].search([
                 ('id', '!=', employee.id),
                 ('active', '=', True)
