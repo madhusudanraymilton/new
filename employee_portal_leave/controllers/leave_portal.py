@@ -24,50 +24,24 @@ class PortalLeaveController(http.Controller):
                     'page_name': 'apply_leave',
                 })
 
-            # Get active leave types
-            #leave_types = request.env['hr.leave.type'].sudo().search([
-            #    ('active', '=', True),
-            #], order='name')
-
-
             # Get leave types that have valid allocations for current employee
-            # First, get all approved allocations for this employee
             allocations = request.env['hr.leave.allocation'].sudo().search([
                 ('employee_id', '=', employee.id),
-                ('state', '=', 'validate'),  # Only approved allocations
-                ('holiday_status_id.active', '=', True),  # Only active leave types
+                ('state', '=', 'validate'),
+                ('holiday_status_id.active', '=', True),
             ])
 
-            # Extract unique leave type IDs from allocations
             allocated_leave_type_ids = allocations.mapped('holiday_status_id').ids
-
-            # Get only leave types that have allocations
             leave_types = request.env['hr.leave.type'].sudo().browse(allocated_leave_type_ids).sorted('name')
 
-            # Alternative: If you want to include leave types that don't require allocation
-            # Uncomment the lines below:
-            # no_allocation_types = request.env['hr.leave.type'].sudo().search([
-            #     ('active', '=', True),
-            #     ('requires_allocation', '=', 'no'),
-            # ])
-            # leave_types = (leave_types | no_allocation_types).sorted('name')
             # Get ALL active employees for delegation (excluding current user)
-            # Using sudo() to bypass access restrictions for reading
-
-
-
-            employees = request.env['hr.employee'].search([
+            # Using sudo() to bypass access restrictions AND to read barcode field
+            employees = request.env['hr.employee'].sudo().search([
                 ('id', '!=', employee.id),
                 ('active', '=', True)
             ], order='name')
 
             _logger.info(f"Found {len(employees)} employees for delegation dropdown")
-
-            # Get leave allocations for current employee
-            allocations = request.env['hr.leave.allocation'].sudo().search([
-                ('employee_id', '=', employee.id),
-                ('state', '=', 'validate')
-            ])
 
             # Calculate leave balances
             leave_balances = {}
@@ -90,7 +64,7 @@ class PortalLeaveController(http.Controller):
 
             return request.render('employee_portal_leave.portal_apply_leave', {
                 'leave_types': leave_types,
-                'employees': employees,
+                'employees': employees,  # This now includes barcode access via sudo()
                 'allocations': allocations,
                 'employee': employee,
                 'leave_balances': leave_balances,
@@ -191,7 +165,7 @@ class PortalLeaveController(http.Controller):
                 'request_date_from': date_from,
                 'request_date_to': date_to,
                 'name': reason,
-                'state': 'confirm',  # Auto-submit for approval
+                'state': 'confirm',
             }
 
             # Add delegation if provided
@@ -289,7 +263,7 @@ class PortalLeaveController(http.Controller):
             if status_filter:
                 domain.append(('state', '=', status_filter))
 
-            # Get leaves
+            # Get leaves with sudo() to access delegate_employee_id.barcode
             leaves = request.env['hr.leave'].sudo().search(
                 domain,
                 order='request_date_from desc, id desc'
@@ -312,7 +286,7 @@ class PortalLeaveController(http.Controller):
             ])
 
             return request.render('employee_portal_leave.portal_leave_history', {
-                'leaves': leaves,
+                'leaves': leaves,  # Using sudo() ensures barcode is accessible
                 'stats': stats,
                 'allocations': allocations,
                 'status_filter': status_filter,

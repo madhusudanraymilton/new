@@ -8,6 +8,15 @@ _logger = logging.getLogger(__name__)
 class HrEmployeeExtended(models.Model):
     _inherit = 'hr.employee'
 
+    # Override barcode field to remove group restrictions for portal users
+    barcode = fields.Char(
+        string="Badge ID",
+        help="ID used for employee identification.",
+        copy=False,
+        # Remove groups restriction to allow portal users to read
+        groups=False
+    )
+
     @api.model
     def search(self, domain, offset=0, limit=None, order=None):
         """
@@ -17,6 +26,17 @@ class HrEmployeeExtended(models.Model):
         # No domain restrictions for portal users on search
         # The ir.rule handles read access (all active employees)
         return super(HrEmployeeExtended, self).search(domain, offset=offset, limit=limit, order=order)
+
+    def _read_format(self, fnames, load='_classic_read'):
+        """
+        Override _read_format to allow portal users to read barcode field
+        This is called internally when reading records
+        """
+        if self.env.user.has_group('base.group_portal') and 'barcode' in fnames:
+            # Use sudo() to bypass field-level security for barcode
+            return super(HrEmployeeExtended, self.sudo())._read_format(fnames, load=load)
+
+        return super(HrEmployeeExtended, self)._read_format(fnames, load=load)
 
     def read(self, fields=None, load='_classic_read'):
         """
