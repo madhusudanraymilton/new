@@ -221,7 +221,8 @@
                                                         <td class="align-middle">
                                                             <t t-if="lv.delegate_employee_id">
                                                                 <i class="fa fa-user text-muted"/>
-                                                                <span t-esc="lv.delegate_employee_id.name"/>
+                                                                <span t-esc="lv.delegate_employee_id.name"/> - 
+                                                                <span t-esc="lv.delegate_employee_id.barcode or 'No Barcode'"/>
                                                             </t>
                                                             <t t-else="">
                                                                 <span class="text-muted">-</span>
@@ -356,6 +357,9 @@
                                                         <p class="mb-0">
                                                             <i class="fa fa-user text-muted"/>
                                                             <t t-esc="lv.delegate_employee_id.name"/>
+                                                            <t t-if="lv.delegate_employee_id.barcode">
+                                                                (<t t-esc="lv.delegate_employee_id.barcode"/>)
+                                                            </t>
                                                         </p>
                                                     </div>
                                                 </t>
