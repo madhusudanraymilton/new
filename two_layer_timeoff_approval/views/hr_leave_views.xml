@@ -11,15 +11,25 @@
             <field name="inherit_id" ref="hr_holidays.hr_leave_view_form"/>
             <field name="arch" type="xml">
 
-                <!-- Add buttons in header -->
+                <!-- Hide default approve button -->
+                <xpath expr="//button[@name='action_approve']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+                <!-- Hide default refuse button -->
+                <xpath expr="//button[@name='action_refuse']" position="replace">
+                </xpath>
+
+                <!-- Add custom buttons after the header statusbar -->
                 <xpath expr="//header" position="inside">
+
                     <!-- Team Leader Approve Button -->
                     <button name="action_approve_team_leader"
-                            string="Team Leader Approve"
+                            string="Approve (Team Leader)"
                             type="object"
                             class="btn-primary"
                             invisible="state != 'confirm'"
-                            groups="two_layer_timeoff_approval.group_team_leader"/>
+                            groups="two_layer_timeoff_approval.group_team_leader,two_layer_timeoff_approval.group_timeoff_administrator"/>
 
                     <!-- HR/Admin Final Approve Button -->
                     <button name="action_approve_hr"
@@ -28,6 +38,15 @@
                             class="btn-success"
                             invisible="state != 'validate1'"
                             groups="two_layer_timeoff_approval.group_hr_manager,two_layer_timeoff_approval.group_timeoff_administrator"/>
+
+                    <!-- Admin Direct Approve (Bypass) -->
+                    <button name="action_validate"
+                            string="Direct Approve (Admin)"
+                            type="object"
+                            class="btn-warning"
+                            invisible="state != 'confirm'"
+                            groups="two_layer_timeoff_approval.group_timeoff_administrator"
+                            confirm="This will bypass the two-layer approval process. Continue?"/>
 
                     <!-- Refuse Button -->
                     <button name="action_refuse"
@@ -39,48 +58,30 @@
                 </xpath>
 
                 <!-- Add approval tracking fields -->
-                <xpath expr="//field[@name='employee_id']" position="after">
-                    <field name="team_leader_approved_by" readonly="1"
-                           invisible="not team_leader_approved_by"/>
-                    <field name="team_leader_approved_date" readonly="1"
-                           invisible="not team_leader_approved_date"/>
-                    <field name="hr_approved_by" readonly="1"
-                           invisible="not hr_approved_by"/>
-                    <field name="hr_approved_date" readonly="1"
-                           invisible="not hr_approved_date"/>
+                <xpath expr="//sheet" position="inside">
+                    <group string="Approval Tracking" invisible="state in ('draft', 'cancel', 'refuse')" class="mt-3">
+                        <group>
+                            <field name="team_leader_approved_by"
+                                   readonly="1"
+                                   invisible="not team_leader_approved_by"/>
+                            <field name="team_leader_approved_date"
+                                   readonly="1"
+                                   invisible="not team_leader_approved_date"/>
+                        </group>
+                        <group>
+                            <field name="hr_approved_by"
+                                   readonly="1"
+                                   invisible="not hr_approved_by"/>
+                            <field name="hr_approved_date"
+                                   readonly="1"
+                                   invisible="not hr_approved_date"/>
+                        </group>
+                    </group>
                 </xpath>
 
             </field>
         </record>
 
-        <!-- ============================================ -->
-        <!-- TREE VIEW: Show state with validate1 -->
-        <!-- ============================================ -->
-        <record id="view_hr_leave_tree_inherit" model="ir.ui.view">
-            <field name="name">hr.leave.tree.inherit.two.layer</field>
-            <field name="model">hr.leave</field>
-            <field name="inherit_id" ref="hr_holidays.hr_leave_view_tree"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='state']" position="attributes">
-                    <attribute name="decoration-info">state == 'validate1'</attribute>
-                </xpath>
-            </field>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- KANBAN VIEW: Update state display -->
-        <!-- ============================================ -->
-        <record id="view_hr_leave_kanban_inherit" model="ir.ui.view">
-            <field name="name">hr.leave.kanban.inherit.two.layer</field>
-            <field name="model">hr.leave</field>
-            <field name="inherit_id" ref="hr_holidays.hr_leave_view_kanban"/>
-            <field name="arch" type="xml">
-                <!-- Add validate1 state visualization -->
-                <xpath expr="//field[@name='state']" position="after">
-                    <field name="team_leader_approved_by"/>
-                </xpath>
-            </field>
-        </record>
 
     </data>
 </odoo>

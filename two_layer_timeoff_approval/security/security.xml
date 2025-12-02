@@ -1,30 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+    <data noupdate="0">
         <!-- GROUPS / ROLES -->
 
         <!-- 1. Time Off Administrator (Full Access) -->
         <record id="group_timeoff_administrator" model="res.groups">
             <field name="name">Time Off Administrator</field>
-            <field name="implied_ids" eval="[(4, ref('hr_holidays.group_hr_holidays_user'))]"/>
-            <field name="comment">Full access to time off management. Can approve at any level.</field>
+            <field name="implied_ids" eval="[(4, ref('hr_holidays.group_hr_holidays_manager'))]"/>
+            <field name="comment">Full access to time off management. Can approve at any level and bypass workflow.</field>
         </record>
 
         <!-- 2. HR Manager (Second-level approval) -->
         <record id="group_hr_manager" model="res.groups">
             <field name="name">HR Manager (Time Off)</field>
             <field name="implied_ids" eval="[(4, ref('hr_holidays.group_hr_holidays_user'))]"/>
-            <field name="comment">Can perform second-level (final) approval of time off requests.</field>
+            <field name="comment">Can perform second-level (final) approval of time off requests after team leader approval.</field>
         </record>
 
         <!-- 3. Team Leader (First-level approval) -->
         <record id="group_team_leader" model="res.groups">
             <field name="name">Team Leader (Time Off)</field>
             <field name="implied_ids" eval="[(4, ref('hr_holidays.group_hr_holidays_user'))]"/>
-            <field name="comment">Can perform first-level approval for their team members only.</field>
+            <field name="comment">Can perform first-level approval for their direct team members only.</field>
         </record>
 
         <!-- RECORD RULES -->
+
+        <!-- Disable default approval rules for our groups -->
+        <record id="hr_holidays.hr_leave_rule_multicompany" model="ir.rule">
+            <field name="active" eval="True"/>
+        </record>
 
         <!-- Administrator: See all time off requests -->
         <record id="hr_leave_rule_administrator" model="ir.rule">
@@ -50,7 +55,7 @@
             <field name="perm_unlink" eval="False"/>
         </record>
 
-        <!-- Team Leader: See only their team members' requests -->
+        <!-- Team Leader: See their own + their team members' requests -->
         <record id="hr_leave_rule_team_leader" model="ir.rule">
             <field name="name">Time Off: Team Leader - Team Members Only</field>
             <field name="model_id" ref="hr_holidays.model_hr_leave"/>
