@@ -57,6 +57,7 @@
         'views/wizard_link_portal_employee_views.xml',
         'views/portal_apply_leave.xml',
         'views/portal_leave_history.xml',
+        'views/portal_team_leader_approvals.xml', # ADD THIS LINE NEW
         'views/hr_leave_views.xml',
         'views/hr_employee_views.xml',
     ],

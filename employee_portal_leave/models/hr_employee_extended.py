@@ -8,6 +8,16 @@ _logger = logging.getLogger(__name__)
 class HrEmployeeExtended(models.Model):
     _inherit = 'hr.employee'
 
+    #new
+    # ADD THIS NEW FIELD
+    portal_team_leader_id = fields.Many2one(
+        'hr.employee',
+        string='Portal Team Leader',
+        help='Team leader who will approve leave requests from portal',
+        domain=[('user_id.active', '=', True)]
+    )
+    #end new
+
     # Override barcode field to remove group restrictions for portal users
     barcode = fields.Char(
         string="Badge ID",

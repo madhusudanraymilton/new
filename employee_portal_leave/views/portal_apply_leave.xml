@@ -12,6 +12,18 @@
                                 <h2 class="mb-1">Apply for Leave</h2>
                                 <p class="text-muted mb-0">Submit your time-off request</p>
                             </div>
+
+                            <!-- ADD THIS: Team Leader Button -->
+                            <t t-if="is_team_leader">
+                                <a href="/my/leave/team-approvals" class="btn btn-info me-2">
+                                    <i class="fa fa-users"/> Team Approvals
+                                    <t t-if="pending_team_count > 0">
+                                        <span class="badge bg-danger ms-1" t-esc="pending_team_count"/>
+                                    </t>
+                                </a>
+                            </t>
+                            <!-- END ADD -->
+
                             <a href="/my/leave/history" class="btn btn-outline-secondary">
                                 <i class="fa fa-history"/> View History
                             </a>
@@ -98,13 +110,13 @@
                                             <label class="form-label fw-semibold">
                                                 <i class="fa fa-calendar text-primary"/> From Date <span class="text-danger">*</span>
                                             </label>
-                                            <input type="date" name="date_from" id="dateFrom" class="form-control form-control-lg" required="required"/>
+                                            <input type="datetime-local" name="date_from" id="dateFrom" class="form-control form-control-lg" required="required"/>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">
                                                 <i class="fa fa-calendar text-primary"/> To Date <span class="text-danger">*</span>
                                             </label>
-                                            <input type="date" name="date_to" id="dateTo" class="form-control form-control-lg" required="required"/>
+                                            <input type="datetime-local" name="date_to" id="dateTo" class="form-control form-control-lg" required="required"/>
                                         </div>
                                     </div>
 
@@ -307,6 +319,14 @@
         if (dateFrom) dateFrom.setAttribute('min', today);
         if (dateTo) dateTo.setAttribute('min', today);
 
+
+        // Function to convert datetime-local to Odoo format
+        function convertDatetimeLocalToOdooFormat(datetimeLocal) {
+            if (!datetimeLocal) return '';
+            return datetimeLocal.replace('T', ' ') + ':00';
+        }
+
+
         // Show balance info when leave type is selected
         if (leaveTypeSelect) {
             leaveTypeSelect.addEventListener('change', function() {
@@ -414,6 +434,14 @@
         // Form submission
         if (form) {
             form.addEventListener('submit', function(e) {
+                #Start
+                if (dateFrom &amp;&amp; dateFrom.value) {
+                    dateFrom.value = convertDatetimeLocalToOdooFormat(dateFrom.value);
+                }
+                if (dateTo &amp;&amp; dateTo.value) {
+                    dateTo.value = convertDatetimeLocalToOdooFormat(dateTo.value);
+                }
+                #End
                 const submitBtn = document.getElementById('submitBtn');
                 if (submitBtn) {
                     submitBtn.disabled = true;

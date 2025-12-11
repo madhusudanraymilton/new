@@ -19,6 +19,20 @@
         </field>
     </record>
 
+    <!-- new -->
+    <!-- ADD THIS NEW SECTION -->
+    <record id="view_employee_form_team_leader_inherit" model="ir.ui.view">
+        <field name="name">hr.employee.form.team.leader</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="portal_team_leader_id" options="{'no_create': True}"/>
+            </xpath>
+        </field>
+    </record>
+    <!-- end new -->
+
     <!-- Add "Create Employee Record" button on user form -->
     <record id="res_users_form_portal_employee_inherit" model="ir.ui.view">
         <field name="name">res.users.form.portal.employee</field>
@@ -35,4 +49,6 @@
             </xpath>
         </field>
     </record>
+
+
 </odoo>
