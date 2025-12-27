@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- List View -->
+        <record id="view_api_item_tree" model="ir.ui.view">
+            <field name="name">api.item.list</field>
+            <field name="model">api.item</field>
+            <field name="arch" type="xml">
+                <list string="API Items">
+                    <field name="name"/>
+                    <field name="description"/>
+                    <field name="price"/>
+                    <field name="available"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_api_item_form" model="ir.ui.view">
+            <field name="name">api.item.form</field>
+            <field name="model">api.item</field>
+            <field name="arch" type="xml">
+                <form string="API Item">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="description"/>
+                            <field name="price"/>
+                            <field name="available"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_api_item" model="ir.actions.act_window">
+            <field name="name">API Items</field>
+            <field name="res_model">api.item</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <!-- Menu Item -->
+        <menuitem id="menu_api_item" name="API Items" parent="menu_cli_root" action="action_api_item"/>
+
+    </data>
+</odoo>

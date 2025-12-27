@@ -1,0 +1,13 @@
+<odoo>
+    <record id="action_cli_dashboard" model="ir.actions.client">
+        <field name="name">CLI Dashboard</field>
+        <field name="tag">custom_dashboard</field>
+    </record>
+
+    <menuitem
+            id="menu_api_dashboard"
+            name="Dashboard"
+            parent="menu_cli_root"
+            action="action_cli_dashboard"
+    />
+</odoo>

@@ -1,0 +1,7 @@
+<templates owl="1">
+    <t t-name="cli.CustomDashboard">
+        <div class="o_custom_dashboard">
+            <h1>Cli Dashboard</h1>
+        </div>
+    </t>
+</templates>

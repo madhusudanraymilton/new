@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="index" name="Api Items">
+        <t t-call="website.layout">
+            <div class="container">
+                <h1>Items</h1>
+                <ul>
+                    <t t-foreach="items" t-as="item">
+                        <li>
+                            <t t-esc="item.name"/>
+                        </li>
+                    </t>
+                </ul>
+            </div>
+        </t>
+    </template>
+</odoo>

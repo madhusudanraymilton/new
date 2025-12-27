@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="cli_record_1" model="cli.record">
+            <field name="name">Record 1</field>
+            <field name="description">This is the first record.</field>
+        </record>
+
+        <record id="cli_record_2" model="cli.record">
+            <field name="name">Record 2</field>
+            <field name="description">This is the second record.</field>
+        </record>
+
+    </data>
+</odoo>

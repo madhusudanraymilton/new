@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_cli_wizard_form" model="ir.ui.view">
+            <field name="name">cli.wizard.form</field>
+            <field name="model">cli.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Confirmation">
+                    <group>
+                        <field name="message"/>
+                    </group>
+                    <footer>
+                        <button name="action_confirm" string="Confirm" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_cli_wizard_with_context" model="ir.actions.act_window">
+            <field name="name">Confirmation</field>
+            <field name="res_model">cli.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{'default_record_id': active_id}</field>
+        </record>
+
+    </data>
+</odoo>
