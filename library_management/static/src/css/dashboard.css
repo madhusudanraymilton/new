@@ -1,23 +1,29 @@
-.library_dashboard {
-    padding: 20px;
+.o_library_dashboard {
+    background-color: #f8f9fa;
+    min-height: 100vh;
 }
 
-.library_stat_card {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
+.o_library_dashboard .card {
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.library_stat_value {
-    font-size: 36px;
-    font-weight: bold;
-    color: #00A09D;
+.o_library_dashboard .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
 }
 
-.library_stat_label {
-    font-size: 14px;
-    color: #666;
-    margin-top: 5px;
+.o_library_dashboard .progress {
+    background-color: #e9ecef;
+}
+
+.o_library_dashboard .table tbody tr {
+    transition: background-color 0.2s;
+}
+
+.o_library_dashboard .table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.o_library_dashboard .display-4 {
+    font-size: 3rem;
 }

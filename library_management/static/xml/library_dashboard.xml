@@ -3,41 +3,255 @@
 
     <t t-name="library_management.LibraryDashboard">
         <div class="o_library_dashboard p-4">
-            <h1>Library Management Dashboard</h1>
+            <!-- Header -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="mb-0">
+                        <i class="fa fa-book me-2"></i>
+                        Library Management Dashboard
+                    </h2>
+                    <p class="text-muted">Overview of your library statistics and activities</p>
+                </div>
+            </div>
 
-            <div class="row mt-4">
-                <div class="col-3">
-                    <div class="card text-center shadow-sm">
-                        <div class="card-body">
-                            <h3>Total Books</h3>
-                            <h2>120</h2>
+            <!-- Loading State -->
+            <div t-if="state.loading" class="text-center py-5">
+                <i class="fa fa-spinner fa-spin fa-3x text-primary"></i>
+                <p class="mt-3">Loading dashboard data...</p>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div t-else="">
+                <!-- Statistics Cards Row 1 -->
+                <div class="row g-3 mb-4">
+                    <!-- Total Books -->
+                    <div class="col-md-3">
+                        <div class="card border-primary shadow-sm h-100" style="cursor: pointer;" t-on-click="openBooks">
+                            <div class="card-body text-center">
+                                <div class="display-4 text-primary mb-2">
+                                    <i class="fa fa-book"></i>
+                                </div>
+                                <h3 class="mb-0" t-esc="state.data.books.total"/>
+                                <p class="text-muted mb-0">Total Books</p>
+                                <small class="text-success">
+                                    <t t-esc="state.data.books.available"/> Available
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Members -->
+                    <div class="col-md-3">
+                        <div class="card border-success shadow-sm h-100" style="cursor: pointer;" t-on-click="openMembers">
+                            <div class="card-body text-center">
+                                <div class="display-4 text-success mb-2">
+                                    <i class="fa fa-users"></i>
+                                </div>
+                                <h3 class="mb-0" t-esc="state.data.members.total"/>
+                                <p class="text-muted mb-0">Total Members</p>
+                                <small>
+                                    <t t-esc="state.data.members.student"/> Students
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Borrowings -->
+                    <div class="col-md-3">
+                        <div class="card border-info shadow-sm h-100" style="cursor: pointer;" t-on-click="openActiveBorrowings">
+                            <div class="card-body text-center">
+                                <div class="display-4 text-info mb-2">
+                                    <i class="fa fa-exchange"></i>
+                                </div>
+                                <h3 class="mb-0" t-esc="state.data.borrowings.active"/>
+                                <p class="text-muted mb-0">Active Borrowings</p>
+                                <small class="text-danger" t-if="state.data.borrowings.overdue > 0">
+                                    <t t-esc="state.data.borrowings.overdue"/> Overdue
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Unpaid Fines -->
+                    <div class="col-md-3">
+                        <div class="card border-warning shadow-sm h-100" style="cursor: pointer;" t-on-click="openUnpaidFines">
+                            <div class="card-body text-center">
+                                <div class="display-4 text-warning mb-2">
+                                    <i class="fa fa-money"></i>
+                                </div>
+                                <h3 class="mb-0">₹<t t-esc="state.data.fines.unpaid_amount.toFixed(2)"/></h3>
+                                <p class="text-muted mb-0">Unpaid Fines</p>
+                                <small>
+                                    <t t-esc="state.data.fines.unpaid_count"/> Pending
+                                </small>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-3">
-                    <div class="card text-center shadow-sm">
-                        <div class="card-body">
-                            <h3>Issued Books</h3>
-                            <h2>45</h2>
+                <!-- Charts Row -->
+                <div class="row g-3 mb-4">
+                    <!-- Top Borrowed Books -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">
+                                    <i class="fa fa-star me-2"></i>
+                                    Top Borrowed Books
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <t t-if="state.data.top_books.length > 0">
+                                    <div t-foreach="state.data.top_books" t-as="book" t-key="book.name" class="mb-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="fw-bold" t-esc="book.name"/>
+                                            <span class="badge bg-primary" t-esc="book.count + ' times'"/>
+                                        </div>
+                                        <div class="progress mt-2" style="height: 8px;">
+                                            <div class="progress-bar bg-primary" role="progressbar"
+                                                 t-att-style="'width: ' + (book.count / state.data.top_books[0].count * 100) + '%'"/>
+                                        </div>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <p class="text-muted text-center py-4">No borrowing data available</p>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Books by Category -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">
+                                    <i class="fa fa-tags me-2"></i>
+                                    Books by Category
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <t t-if="state.data.books_by_category.length > 0">
+                                    <div t-foreach="state.data.books_by_category" t-as="category" t-key="category.name" class="mb-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="fw-bold" t-esc="category.name"/>
+                                            <span class="badge bg-success" t-esc="category.count + ' books'"/>
+                                        </div>
+                                        <div class="progress mt-2" style="height: 8px;">
+                                            <div class="progress-bar bg-success" role="progressbar"
+                                                 t-att-style="'width: ' + (category.count / state.data.books_by_category[0].count * 100) + '%'"/>
+                                        </div>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <p class="text-muted text-center py-4">No category data available</p>
+                                </t>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-3">
-                    <div class="card text-center shadow-sm">
-                        <div class="card-body">
-                            <h3>Available Books</h3>
-                            <h2>75</h2>
+                <!-- Recent Borrowings Table -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">
+                                    <i class="fa fa-clock-o me-2"></i>
+                                    Recent Borrowings
+                                </h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <t t-if="state.data.recent_borrowings.length > 0">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Reference</th>
+                                                <th>Member</th>
+                                                <th>Book</th>
+                                                <th>Borrow Date</th>
+                                                <th>Due Date</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="state.data.recent_borrowings" t-as="borrowing"
+                                                t-key="borrowing.id"
+                                                style="cursor: pointer;"
+                                                t-on-click="() => this.openBorrowing(borrowing.id)">
+                                                <td t-esc="borrowing.name"/>
+                                                <td t-esc="borrowing.member"/>
+                                                <td t-esc="borrowing.book"/>
+                                                <td t-esc="borrowing.borrow_date"/>
+                                                <td t-esc="borrowing.due_date"/>
+                                                <td>
+                                                    <span class="badge"
+                                                          t-att-class="{
+                                                              'borrowed': 'bg-info',
+                                                              'returned': 'bg-success',
+                                                              'overdue': 'bg-danger',
+                                                              'draft': 'bg-secondary'
+                                                          }[borrowing.status]"
+                                                          t-esc="borrowing.status"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </t>
+                                <t t-else="">
+                                    <p class="text-muted text-center py-4">No recent borrowings</p>
+                                </t>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-3">
-                    <div class="card text-center shadow-sm">
-                        <div class="card-body">
-                            <h3>Members</h3>
-                            <h2>30</h2>
+                <!-- Quick Stats Row -->
+                <div class="row g-3 mt-4">
+                    <div class="col-md-4">
+                        <div class="card shadow-sm border-0" style="cursor: pointer;" t-on-click="openOverdueBorrowings">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-muted mb-1">Overdue Books</h6>
+                                        <h3 class="mb-0 text-danger" t-esc="state.data.borrowings.overdue"/>
+                                    </div>
+                                    <div class="text-danger">
+                                        <i class="fa fa-exclamation-triangle fa-3x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-muted mb-1">Maintenance Books</h6>
+                                        <h3 class="mb-0 text-warning" t-esc="state.data.books.maintenance"/>
+                                    </div>
+                                    <div class="text-warning">
+                                        <i class="fa fa-wrench fa-3x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-muted mb-1">Total Fines Collected</h6>
+                                        <h3 class="mb-0 text-success">₹<t t-esc="state.data.fines.paid_amount.toFixed(2)"/></h3>
+                                    </div>
+                                    <div class="text-success">
+                                        <i class="fa fa-check-circle fa-3x"></i>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

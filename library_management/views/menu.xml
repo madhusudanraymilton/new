@@ -11,7 +11,7 @@
               name="Dashboard"
               parent="menu_library_root"
               action="action_library_dashboard"
-              sequence="11"/>
+              sequence="70"/>
 
 
     <!-- Operations Menu -->

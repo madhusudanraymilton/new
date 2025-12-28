@@ -54,9 +54,9 @@ This module provides a complete library management solution with:
     ],
     'assets': {
         'web.assets_web': [
-            #'library_management/static/src/css/dashboard.css',
-            #'library_management/static/src/js/dashboard.js',
-            #'library_management/static/src/xml/library_dashboard.xml',
+            'library_management/static/src/css/dashboard.css',
+            'library_management/static/src/js/dashboard.js',
+            'library_management/static/src/xml/library_dashboard.xml',
         ],
     },
     'external_dependencies': {
